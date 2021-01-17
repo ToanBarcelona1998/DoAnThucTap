@@ -16,7 +16,6 @@ class WeatherLongLatService{
     http.Response _response=await _api.getResponse();
     if(_response.statusCode==200){
       Map map=json.decode(_response.body);
-      print(map);
       var list=map["daily"] as List;
       listDaily=list.map((e) => Daily.fromJson(e)).toList();
     }else{

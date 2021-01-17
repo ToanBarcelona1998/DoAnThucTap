@@ -9,6 +9,7 @@ import 'package:tiengviet/tiengviet.dart';
 import 'package:weather_vn_app/blocs/weather_bloc.dart';
 import 'package:weather_vn_app/models/entitys/daily.dart';
 import 'package:weather_vn_app/models/entitys/name_city.dart';
+import 'package:weather_vn_app/models/entitys/weather_name_city.dart';
 import 'package:weather_vn_app/public/custom_paint_container.dart';
 Future<NameCity> getNameCity() async {
   NameCity nameCity = NameCity();
@@ -23,6 +24,18 @@ Future<NameCity> getNameCity() async {
     throw Exception("Lỗi call server");
   }
   return nameCity;
+}
+
+Future<WeatherNameCity> getWeatherCity(String city)async{
+  WeatherNameCity weatherNameCity;
+  http.Response response=await http.get("http://api.openweathermap.org/data/2.5/weather?q=$city&appid=2fdac9584afb2d9ad8a2bd7a6ba08329&lang=vi&units=metric");
+  if(response.statusCode==200){
+    Map map=json.decode(response.body);
+    weatherNameCity=WeatherNameCity.fromJson(map);
+  }else{
+    throw Exception("Lỗi call server");
+  }
+  return weatherNameCity;
 }
 
 
@@ -417,7 +430,7 @@ class SearchWeather extends SearchDelegate{
 
   @override
   Widget buildResults(BuildContext context) {
-
+      return Text("");
   }
 
   @override
@@ -432,7 +445,7 @@ class SearchWeather extends SearchDelegate{
     return ListView.builder(itemCount: listgoiy.length,itemBuilder: (context,index){
       return ListTile(
           title: Text(listgoiy[index]),
-        onTap: (){
+          onTap: (){
 
         },
       );
