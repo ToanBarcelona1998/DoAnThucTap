@@ -1,17 +1,12 @@
+import 'package:json_annotation/json_annotation.dart';
+part 'weather.g.dart';
+@JsonSerializable()
 class Weather{
   int id;
   String main;
   String description;
   String icon;
-  Weather({this.id, this.main, this.description, this.icon});
-  fromJsonInfo(Map<dynamic, dynamic> map) {
-      this.id=int.parse(map["id"].toString().trim());
-      this.main=map["main"];
-      this.description=map["description"];
-      this.icon=map["icon"];
-  }
-
-
-
-
+  Weather();
+  factory Weather.fromJson(Map map)=>_$WeatherFromJson(map);
+  toJson()=>_$WeatherToJson(this);
 }
