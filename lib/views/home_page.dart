@@ -8,6 +8,7 @@ import 'package:location/location.dart';
 import 'package:weather_vn_app/blocs/weather_bloc.dart';
 import 'package:weather_vn_app/models/entitys/daily.dart';
 import 'package:weather_vn_app/models/entitys/name_city.dart';
+import 'package:weather_vn_app/public/custom_paint_container.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -73,16 +74,16 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child: Stack(
                     children: [
-                      CustomPaint(
-                        painter: MyPaint(),
-                        child: Container(
-                          width: width,
-                          height: double.maxFinite,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: Column(
-                              children: [
-                                Container(
+                      Container(
+                        width: width,
+                        height: double.maxFinite,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Column(
+                            children: [
+                              CustomPaint(
+                                painter: MyPaint(listColor: [Color(0xff90afc5),Color(0xff338b67)]),
+                                child: Container(
                                   width: width,
                                   height: height / 2 -
                                       AppBar().preferredSize.height -
@@ -134,259 +135,248 @@ class _HomePageState extends State<HomePage> {
                                     ],
                                   ),
                                 ),
-                                Container(
-                                  width: width,
-                                  height: height / 4,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                          flex: 1,
-                                          child: Text(
-                                            "${snapshot.data[0].weather[0].main}",
-                                            style: TextStyle(fontSize: 25),
-                                            textAlign: TextAlign.center,
-                                          )),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Image.network(
-                                          "http://openweathermap.org/img/wn/${snapshot.data[0].weather[0].icon}@4x.png",
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Divider(
-                                  color: Colors.grey,
-                                ),
-                                Container(
-                                  height: height / 4,
-                                  child: ListView.builder(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: snapshot.data.length,
-                                      itemBuilder: (context, index) {
-                                        return Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            children: [
-                                              Card(
-                                                  child: Text(
-                                                      "${convertToDay(snapshot.data[index].dt)}")),
-                                              Image.network(
-                                                  "http://openweathermap.org/img/wn/${snapshot.data[index].weather[0].icon}@2x.png"),
-                                              Card(
-                                                child: Text(
-                                                    "${(snapshot.data[index].temp.day).toInt()}℃"),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }),
-                                ),
-                                Divider(
-                                  color: Colors.grey,
-                                ),
-                                Container(
-                                  alignment: Alignment.center,
-                                  width: width,
-                                  height: height / 16,
-                                  child: Text(
-                                    "Hôm nay: Hiện tại ${snapshot.data[0].weather[0].description} Nhiệt độ hiện tại là ${(snapshot.data[0].temp.day).toInt()}℃",
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                Divider(
-                                  color: Colors.grey,
-                                ),
-                                Table(
+                              ),
+                              Container(
+                                width: width,
+                                height: height / 4,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    TableRow(children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Mt Mọc"),
-                                            Text(
-                                                "${convertTime(snapshot.data[0].sunset)} Am"),
-                                          ],
-                                        ),
+                                    Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          "${snapshot.data[0].weather[0].main}",
+                                          style: TextStyle(fontSize: 25),
+                                          textAlign: TextAlign.center,
+                                        )),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Image.network(
+                                        "http://openweathermap.org/img/wn/${snapshot.data[0].weather[0].icon}@4x.png",
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Mt Lặn"),
-                                            Text(
-                                                "${convertTime(snapshot.data[0].sunrise)} Pm"),
-                                          ],
-                                        ),
-                                      ),
-                                    ]),
-                                    TableRow(children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Nhiệt độ buổi sáng"),
-                                            Text(
-                                                "${(snapshot.data[0].temp.morn).toInt()}℃"),
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Nhiệt độ ban đêm"),
-                                            Text(
-                                                "${(snapshot.data[0].temp.night).toInt()}℃"),
-                                          ],
-                                        ),
-                                      ),
-                                    ]),
-                                    TableRow(children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Nhiệt độ cảm nhận"),
-                                            Text(
-                                                "${(snapshot.data[0].feelsLike.day).toInt()}℃"),
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Nhiệt độ cảm nhận sáng"),
-                                            Text(
-                                                "${(snapshot.data[0].feelsLike.morn).toInt()}℃"),
-                                          ],
-                                        ),
-                                      ),
-                                    ]),
-                                    TableRow(children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Nhiệt độ cảm nhận ban đêm"),
-                                            Text(
-                                                "${(snapshot.data[0].feelsLike.night).toInt()}℃"),
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Nhiệt độ khí quyển"),
-                                            Text(
-                                                "${(snapshot.data[0].dew_point).toInt()}℃"),
-                                          ],
-                                        ),
-                                      ),
-                                    ]),
-                                    TableRow(children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Gió"),
-                                            Text(
-                                                "${(snapshot.data[0].wind_speed) * 60} km/h"),
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Áp suất"),
-                                            Text(
-                                                "${snapshot.data[0].pressure} hPa"),
-                                          ],
-                                        ),
-                                      ),
-                                    ]),
-                                    TableRow(children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Độ ẩm"),
-                                            Text("${snapshot.data[0].humidity}%"),
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Hướng gió"),
-                                            Text(
-                                                "${(snapshot.data[0].wind_deg).toInt()}°"),
-                                          ],
-                                        ),
-                                      ),
-                                    ]),
+                                    ),
                                   ],
                                 ),
-                                SizedBox(
-                                  height: height / 15,
-                                )
-                              ],
-                            ),
+                              ),
+                              Divider(
+                                color: Colors.grey,
+                              ),
+                              Container(
+                                height: height / 4,
+                                child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: snapshot.data.length,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          children: [
+                                            Card(
+                                                child: Text(
+                                                    "${convertToDay(snapshot.data[index].dt)}")),
+                                            Image.network(
+                                                "http://openweathermap.org/img/wn/${snapshot.data[index].weather[0].icon}@2x.png"),
+                                            Card(
+                                              child: Text(
+                                                  "${(snapshot.data[index].temp.day).toInt()}℃"),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                              ),
+                              Divider(
+                                color: Colors.grey,
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                width: width,
+                                height: height / 16,
+                                child: Text(
+                                  "Hôm nay: Hiện tại ${snapshot.data[0].weather[0].description} Nhiệt độ hiện tại là ${(snapshot.data[0].temp.day).toInt()}℃",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              Divider(
+                                color: Colors.grey,
+                              ),
+                              Table(
+                                children: [
+                                  TableRow(children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Mt Mọc"),
+                                          Text(
+                                              "${convertTime(snapshot.data[0].sunset)} Am"),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Mt Lặn"),
+                                          Text(
+                                              "${convertTime(snapshot.data[0].sunrise)} Pm"),
+                                        ],
+                                      ),
+                                    ),
+                                  ]),
+                                  TableRow(children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Nhiệt độ buổi sáng"),
+                                          Text(
+                                              "${(snapshot.data[0].temp.morn).toInt()}℃"),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Nhiệt độ ban đêm"),
+                                          Text(
+                                              "${(snapshot.data[0].temp.night).toInt()}℃"),
+                                        ],
+                                      ),
+                                    ),
+                                  ]),
+                                  TableRow(children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Nhiệt độ cảm nhận"),
+                                          Text(
+                                              "${(snapshot.data[0].feelsLike.day).toInt()}℃"),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Nhiệt độ cảm nhận sáng"),
+                                          Text(
+                                              "${(snapshot.data[0].feelsLike.morn).toInt()}℃"),
+                                        ],
+                                      ),
+                                    ),
+                                  ]),
+                                  TableRow(children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Nhiệt độ cảm nhận ban đêm"),
+                                          Text(
+                                              "${(snapshot.data[0].feelsLike.night).toInt()}℃"),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Nhiệt độ khí quyển"),
+                                          Text(
+                                              "${(snapshot.data[0].dew_point).toInt()}℃"),
+                                        ],
+                                      ),
+                                    ),
+                                  ]),
+                                  TableRow(children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Gió"),
+                                          Text(
+                                              "${(snapshot.data[0].wind_speed) * 60} km/h"),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Áp suất"),
+                                          Text(
+                                              "${snapshot.data[0].pressure} hPa"),
+                                        ],
+                                      ),
+                                    ),
+                                  ]),
+                                  TableRow(children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Độ ẩm"),
+                                          Text("${snapshot.data[0].humidity}%"),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Hướng gió"),
+                                          Text(
+                                              "${(snapshot.data[0].wind_deg).toInt()}°"),
+                                        ],
+                                      ),
+                                    ),
+                                  ]),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),
+
                       Positioned(
-                        bottom: 0,
+                        bottom: 10,right: 10,
                         child: Container(
                           decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                Color(0xffb0cecc),
-                                Color(0xff98afb9)
-                              ])),
-                          width: width,
-                          height: height / 15,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Icon(Icons.add_box_rounded),
-                                Icon(Icons.select_all),
-                              ],
-                            ),
+                            color: Colors.blueGrey[100],
+                            shape: BoxShape.circle
+                          ),
+                          child: IconButton(
+                            iconSize: 35,
+                            icon: Icon(Icons.search),
+                            onPressed: (){
+                                showSearch(context: context, delegate: SearchWeather());
+                            },
                           ),
                         ),
                       )
@@ -402,5 +392,26 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+class SearchWeather extends SearchDelegate{
+  @override
+  List<Widget> buildActions(BuildContext context) {
+      return [];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+      return null;
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return Text("");
+  }
+
 }
 
