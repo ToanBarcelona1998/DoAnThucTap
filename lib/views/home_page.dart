@@ -5,10 +5,26 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
+import 'package:tiengviet/tiengviet.dart';
 import 'package:weather_vn_app/blocs/weather_bloc.dart';
 import 'package:weather_vn_app/models/entitys/daily.dart';
 import 'package:weather_vn_app/models/entitys/name_city.dart';
 import 'package:weather_vn_app/public/custom_paint_container.dart';
+Future<NameCity> getNameCity() async {
+  NameCity nameCity = NameCity();
+  Location _location = Location();
+  LocationData _data = await _location.getLocation();
+  http.Response response = await http.get(
+      "http://api.openweathermap.org/data/2.5/weather?lat=${_data.latitude}&lon=${_data.longitude}&appid=2fdac9584afb2d9ad8a2bd7a6ba08329");
+  if (response.statusCode == 200) {
+    Map map = json.decode(response.body);
+    nameCity.fromJson(map);
+  } else {
+    throw Exception("Lỗi call server");
+  }
+  return nameCity;
+}
+
 
 class HomePage extends StatefulWidget {
   @override
@@ -39,20 +55,6 @@ class _HomePageState extends State<HomePage> {
     return _format.format(_dateTime);
   }
 
-  Future<NameCity> getNameCity() async {
-    NameCity nameCity = NameCity();
-    Location _location = Location();
-    LocationData _data = await _location.getLocation();
-    http.Response response = await http.get(
-        "http://api.openweathermap.org/data/2.5/weather?lat=${_data.latitude}&lon=${_data.longitude}&appid=2fdac9584afb2d9ad8a2bd7a6ba08329");
-    if (response.statusCode == 200) {
-      Map map = json.decode(response.body);
-      nameCity.fromJson(map);
-    } else {
-      throw Exception("Lỗi call server");
-    }
-    return nameCity;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -374,8 +376,15 @@ class _HomePageState extends State<HomePage> {
                           child: IconButton(
                             iconSize: 35,
                             icon: Icon(Icons.search),
-                            onPressed: (){
-                                showSearch(context: context, delegate: SearchWeather());
+                            onPressed: () async{
+                              String data = await DefaultAssetBundle.of(context).loadString("assets/city.list.json");
+                              List<String> listCityVn=List();
+                              var jsonResult = await json.decode(data);
+                              jsonResult.forEach((element) async{
+                                if(element["country"]=="VN")
+                                  await listCityVn.add(element["name"]);
+                              });
+                                showSearch(context: context, delegate: SearchWeather(listCityVn: listCityVn));
                             },
                           ),
                         ),
@@ -394,6 +403,8 @@ class _HomePageState extends State<HomePage> {
   }
 }
 class SearchWeather extends SearchDelegate{
+  List<String> listCityVn;
+  SearchWeather({this.listCityVn});
   @override
   List<Widget> buildActions(BuildContext context) {
       return [];
@@ -406,11 +417,26 @@ class SearchWeather extends SearchDelegate{
 
   @override
   Widget buildResults(BuildContext context) {
+
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Text("");
+    List<String> listgoiy=List();
+    listgoiy.clear();
+    listCityVn.forEach((element) {
+      if((TiengViet.parse(query.toLowerCase().replaceAll(" ", "")).allMatches(TiengViet.parse(element.toLowerCase().replaceAll(" ", "")))).isNotEmpty){
+        listgoiy.add(element);
+      }
+    });
+    return ListView.builder(itemCount: listgoiy.length,itemBuilder: (context,index){
+      return ListTile(
+          title: Text(listgoiy[index]),
+        onTap: (){
+
+        },
+      );
+    });
   }
 
 }
