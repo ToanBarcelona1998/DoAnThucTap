@@ -11,6 +11,7 @@ import 'package:weather_vn_app/models/entitys/daily.dart';
 import 'package:weather_vn_app/models/entitys/name_city.dart';
 import 'package:weather_vn_app/models/entitys/weather_name_city.dart';
 import 'package:weather_vn_app/public/custom_paint_container.dart';
+
 Future<NameCity> getNameCity() async {
   NameCity nameCity = NameCity();
   Location _location = Location();
@@ -26,18 +27,18 @@ Future<NameCity> getNameCity() async {
   return nameCity;
 }
 
-Future<WeatherNameCity> getWeatherCity(String city)async{
+Future<WeatherNameCity> getWeatherCity(String city) async {
   WeatherNameCity weatherNameCity;
-  http.Response response=await http.get("http://api.openweathermap.org/data/2.5/weather?q=$city&appid=2fdac9584afb2d9ad8a2bd7a6ba08329&lang=vi&units=metric");
-  if(response.statusCode==200){
-    Map map=json.decode(response.body);
-    weatherNameCity=WeatherNameCity.fromJson(map);
-  }else{
+  http.Response response = await http.get(
+      "http://api.openweathermap.org/data/2.5/weather?q=$city&appid=2fdac9584afb2d9ad8a2bd7a6ba08329&lang=vi&units=metric");
+  if (response.statusCode == 200) {
+    Map map = json.decode(response.body);
+    weatherNameCity = WeatherNameCity.fromJson(map);
+  } else {
     throw Exception("Lỗi call server");
   }
   return weatherNameCity;
 }
-
 
 class HomePage extends StatefulWidget {
   @override
@@ -68,7 +69,6 @@ class _HomePageState extends State<HomePage> {
     return _format.format(_dateTime);
   }
 
-
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -83,9 +83,8 @@ class _HomePageState extends State<HomePage> {
                   width: double.maxFinite,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage("assets/images/weather.jpg"),
-                      fit: BoxFit.fill
-                    ),
+                        image: AssetImage("assets/images/weather.jpg"),
+                        fit: BoxFit.fill),
                   ),
                   child: Stack(
                     children: [
@@ -97,7 +96,10 @@ class _HomePageState extends State<HomePage> {
                           child: Column(
                             children: [
                               CustomPaint(
-                                painter: MyPaint(listColor: [Color(0xff90afc5),Color(0xff338b67)]),
+                                painter: MyPaint(listColor: [
+                                  Color(0xff90afc5),
+                                  Color(0xff338b67)
+                                ]),
                                 child: Container(
                                   width: width,
                                   height: height / 2 -
@@ -378,26 +380,29 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-
                       Positioned(
-                        bottom: 10,right: 10,
+                        bottom: 10,
+                        right: 10,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.blueGrey[100],
-                            shape: BoxShape.circle
-                          ),
+                              color: Colors.blueGrey[100],
+                              shape: BoxShape.circle),
                           child: IconButton(
                             iconSize: 35,
                             icon: Icon(Icons.search),
-                            onPressed: () async{
-                              String data = await DefaultAssetBundle.of(context).loadString("assets/city.list.json");
-                              List<String> listCityVn=List();
+                            onPressed: () async {
+                              String data = await DefaultAssetBundle.of(context)
+                                  .loadString("assets/city.list.json");
+                              List<String> listCityVn = List();
                               var jsonResult = await json.decode(data);
-                              jsonResult.forEach((element) async{
-                                if(element["country"]=="VN")
+                              jsonResult.forEach((element) async {
+                                if (element["country"] == "VN")
                                   await listCityVn.add(element["name"]);
                               });
-                                showSearch(context: context, delegate: SearchWeather(listCityVn: listCityVn));
+                              showSearch(
+                                  context: context,
+                                  delegate:
+                                      SearchWeather(listCityVn: listCityVn));
                             },
                           ),
                         ),
@@ -415,42 +420,156 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-class SearchWeather extends SearchDelegate{
+
+class SearchWeather extends SearchDelegate {
   List<String> listCityVn;
+
   SearchWeather({this.listCityVn});
+
+  List<WeatherNameCity> myWeather;
+
   @override
   List<Widget> buildActions(BuildContext context) {
-      return [];
+    return [];
   }
 
   @override
   Widget buildLeading(BuildContext context) {
-      return null;
+    return null;
   }
 
   @override
   Widget buildResults(BuildContext context) {
-      return Text("");
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    return FutureBuilder(
+        future: getWeatherCity(query),
+        builder: (context, AsyncSnapshot<WeatherNameCity> snapshot) {
+          return snapshot.hasData
+              ? Container(
+                  width: width,
+                  height: height,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: width,
+                          height: height / 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(snapshot.data.name,style: TextStyle(fontSize: 25),),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(snapshot.data.weather[0].description),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child:
+                                    Text("${(snapshot.data.main.temp).toInt()}℃"),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                          "${(snapshot.data.main.temp_max).toInt()}℃"),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                          "${(snapshot.data.main.temp_min).toInt()}℃"),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        Divider(
+                          color: Colors.grey,
+                        ),
+                        Container(
+                          width: width,
+                          height: height / 2,
+                          child: Column(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  width: width,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                snapshot.data.weather[0].main,
+                                                style: TextStyle(fontSize: 24),
+                                              ))),
+                                      Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                              alignment: Alignment.center,
+                                              child: Image.network(
+                                                  "http://openweathermap.org/img/wn/${snapshot.data.weather[0].icon}@4x.png"))),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      "Hôm nay ${snapshot.data.name} ${snapshot.data.weather[0].description} nhiệt độ cảm nhận là ${(snapshot.data.main.feels_like).toInt()}℃",
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : CircularProgressIndicator(
+                  backgroundColor: Colors.lightGreen,
+                );
+        });
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    List<String> listgoiy=List();
+    List<String> listgoiy = List();
     listgoiy.clear();
     listCityVn.forEach((element) {
-      if((TiengViet.parse(query.toLowerCase().replaceAll(" ", "")).allMatches(TiengViet.parse(element.toLowerCase().replaceAll(" ", "")))).isNotEmpty){
+      if ((TiengViet.parse(query.toLowerCase().replaceAll(" ", "")).allMatches(
+              TiengViet.parse(element.toLowerCase().replaceAll(" ", ""))))
+          .isNotEmpty&&query!="") {
         listgoiy.add(element);
       }
     });
-    return ListView.builder(itemCount: listgoiy.length,itemBuilder: (context,index){
-      return ListTile(
-          title: Text(listgoiy[index]),
-          onTap: (){
-
-        },
-      );
-    });
+    return ListView.builder(
+        itemCount: listgoiy.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(listgoiy[index]),
+            onTap: () async {
+              query = listgoiy[index];
+            },
+          );
+        });
   }
-
 }
-
